@@ -1,0 +1,36 @@
+{
+  "name": "ygo_db",
+  "version": "1.0.0",
+  "description": "Retrieve ygo cards data from https://db.ygoprodeck.com/api-guide/",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "rimraf dist/ && babel ./ --out-dir dist/ --ignore ./node_modules,./.babelrc,./package.json,./npm-debug.log --copy-files",
+    "start": "npm run build && node dist/server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AndresSp/YGO_DB.git"
+  },
+  "keywords": [
+    "ygo",
+    "db",
+    "node",
+    "database"
+  ],
+  "author": "AndresSp",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/AndresSp/YGO_DB/issues"
+  },
+  "homepage": "https://github.com/AndresSp/YGO_DB#readme",
+  "dependencies": {
+    "mongoose": "^5.3.13",
+    "validator": "^10.9.0"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-preset-es2015": "^6.24.1",
+    "rimraf": "^2.6.2"
+  }
+}
