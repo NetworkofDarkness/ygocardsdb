@@ -1,11 +1,11 @@
 import express from "express";
 const router = express.Router();
 
-import { populateDB } from "../functions/populateDB";
-
+import populateDB from "../functions/populateDB";
+const populate = new populateDB();
 
 router.get("/", (req, res) => {
-    populateDB();
+    populate.run();
     res.send("Hello World");
 });
 

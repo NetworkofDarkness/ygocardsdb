@@ -1,19 +1,8 @@
-"use strict";
+//Create new Card
+import mongoose from "mongoose"
+const Schema = mongoose.Schema;
 
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _mongoose = require("mongoose");
-
-var _mongoose2 = _interopRequireDefault(_mongoose);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-var Schema = _mongoose2.default.Schema; //Create new Card
-
-
-var cardSchema = new Schema({
+const cardSchema = new Schema({
     name: { type: String, required: true },
     desc: { type: String },
     atk: { type: String },
@@ -32,4 +21,4 @@ var cardSchema = new Schema({
     ban_goat: { type: String }
 });
 
-exports.default = _mongoose2.default.model('Card', cardSchema);
+export default cardSchema;

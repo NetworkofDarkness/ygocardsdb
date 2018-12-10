@@ -16,5 +16,5 @@ var router = _express2.default.Router();
 app.use('/', _handlers2.default);
 
 app.listen(3000, function () {
-  return console.log('Example app listening on port 3000!');
+  return console.log('Listening on port 3000!');
 });
