@@ -25,6 +25,7 @@
   },
   "homepage": "https://github.com/AndresSp/YGO_DB#readme",
   "dependencies": {
+    "express": "^4.16.4",
     "mongoose": "^5.3.13",
     "validator": "^10.9.0"
   },
