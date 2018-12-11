@@ -8,8 +8,9 @@ class populateDB {
         database.connect().then((conn) => {
             const Card = conn.model('card', cardSchema);
             const sample = new Card({name: 'Dark Magician'});
-            sample.save().then(() => console.log('meow'));
-        })
+            sample.save().then((result) => console.log(result));
+        }).catch((err) => 
+            console.log("Error: ", err))
     }
     
 }

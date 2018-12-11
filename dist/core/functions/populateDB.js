@@ -31,9 +31,11 @@ var populateDB = function () {
             database.connect().then(function (conn) {
                 var Card = conn.model('card', _card2.default);
                 var sample = new Card({ name: 'Dark Magician' });
-                sample.save().then(function () {
-                    return console.log('meow');
+                sample.save().then(function (result) {
+                    return console.log(result);
                 });
+            }).catch(function (err) {
+                return console.log("Error: ", err);
             });
         }
     }]);
