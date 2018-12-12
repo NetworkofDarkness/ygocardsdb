@@ -8,6 +8,8 @@ var _express = require("express");
 
 var _express2 = _interopRequireDefault(_express);
 
+require("fs");
+
 var _populateDB = require("../functions/populateDB");
 
 var _populateDB2 = _interopRequireDefault(_populateDB);
@@ -20,7 +22,7 @@ var populate = new _populateDB2.default();
 
 router.get("/", function (req, res) {
     populate.run();
-    res.send("Hello World");
+    res.send('Populate DB');
 });
 
 exports.default = router;
