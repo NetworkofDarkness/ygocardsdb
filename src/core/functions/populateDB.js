@@ -13,7 +13,6 @@ class populateDB {
                 Card.insertMany(response.data[0])
                 .then(() => console.log("Insert Response Succesfully to " + Card.collection.collectionName))
                 .catch((error) => console.log(error))
-                //Card.create({name: 'Dark Magician'});
             })
             .then((result) => console.log("Create cards succesfully"))
             .catch((err) => 

@@ -1,7 +1,7 @@
 let mongoose = require('mongoose');
 
-const server = require('../config/db_config.json').dbServer;
-const database = require('../config/db_config.json').dbName;
+const server = require('../../config/db_config.json').dbServer;
+const database = require('../../config/db_config.json').dbName;
 class Database {
 connect() {
       mongoose.Promise = global.Promise;

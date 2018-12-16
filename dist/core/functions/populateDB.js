@@ -41,7 +41,6 @@ var populateDB = function () {
                     }).catch(function (error) {
                         return console.log(error);
                     });
-                    //Card.create({name: 'Dark Magician'});
                 }).then(function (result) {
                     return console.log("Create cards succesfully");
                 }).catch(function (err) {
