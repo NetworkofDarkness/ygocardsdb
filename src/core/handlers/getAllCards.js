@@ -6,8 +6,9 @@ import populateDB from "../functions/populateDB";
 const populate = new populateDB();
 
 router.get("/", (req, res) => {
-    populate.run();
-    res.send('Populate DB');
+    populate.run()
+        .then(() => res.send('DB Populated'))
+    //res.send('Populate DB');
 });
 
 export default router

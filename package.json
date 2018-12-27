@@ -28,6 +28,7 @@
   "dependencies": {
     "axios": "^0.18.0",
     "express": "^4.16.4",
+    "fs": "0.0.1-security",
     "mongoose": "^5.3.13",
     "validator": "^10.9.0"
   },
