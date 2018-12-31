@@ -1,4 +1,5 @@
 import axios from "axios";
+import fileSaver from "file-saver";
 import fs from "fs";
 import Database from "../../db/connect";
 import cardSchema from "../../db/schemas/card";
@@ -30,6 +31,12 @@ class populateDB {
                         return cards;
                     })
                     .then((cards) => {
+                        if(fs.exists("/cards")){
+                            this.deleteFolderRecursive("/cards");
+                        } else {
+                            fs.mkdirSync("/cards");
+                        }
+
                         const id = cards.map(card => {
                             this.downloadImage("https://ygoprodeck.com/pics/" + card.id + ".jpg", 'cards/card_' + card.id + ".jpg");
                         });
@@ -43,18 +50,39 @@ class populateDB {
 
     downloadImage(url, image_path){
         axios.get(url, {
-            responseType: 'blob'
+            responseType: 'arraybuffer',
+            headers: {
+                'Content-Type': 'image/jpeg',
+              },
         })
         .then(response => {
+            // response.data is an empty object
+
+            //response.data.pipe(fs.createWriteStream( image_path ))
             fs.writeFile(image_path, response.data, (err) => {
-                if(err) console.log(err)
+                console.log(err);
             });
-            //response.data.pipe(fs.createWriteStream( image_path ));
+            //writeFileSync(image_path, response.data);
+
             return { 'status' : true, 'error' : '' };
         })
         .catch(error => 
             ( { 'status' : false, 'error' : 'Error: ' + error.message }));
     }
+
+    deleteFolderRecursive(path) {
+        if (fs.existsSync(path)) {
+          fs.readdirSync(path).forEach(function(file, index){
+            var curPath = path + "/" + file;
+            if (fs.lstatSync(curPath).isDirectory()) { // recurse
+              deleteFolderRecursive(curPath);
+            } else { // delete file
+              fs.unlinkSync(curPath);
+            }
+          });
+          fs.rmdirSync(path);
+        }
+      };
 }
 
 export default populateDB;
