@@ -1,6 +1,5 @@
 import axios from "axios";
-import fileSaver from "file-saver";
-import fs from "fs";
+import fs from "fs-extra";
 import Database from "../../db/connect";
 import cardSchema from "../../db/schemas/card";
 const dbName = require('../../../config/db_config.json').dbName;
@@ -11,36 +10,46 @@ class populateDB {
 
     run(){
         return Promise.all([
-            new Promise((resolve) =>  setTimeout(resolve, 50)),
+            this.delay(1000),
             database.connect(),
             axios.get("https://db.ygoprodeck.com/api/v2/cardinfo.php"),
         ])
         .then( async ([ delay, conn, response]) => {
             try {
                 const Card = conn.model('card', cardSchema, 'cards');
-                await conn.db.listCollections({name: 'cards'}).next()
-                    .then((collInfo) => {
-                        if(collInfo) {
-                            conn.dropCollection(collInfo.name); // 'cards' Collection exists
-                        }
-                        const cards = response.data[0];
+                const collInfo = await conn.db.listCollections({name: 'cards'}).next();
+                if(collInfo) {
+                    await conn.dropCollection(collInfo.name); // 'cards' Collection exists
+                }
+                const cards = response.data[0];
+                await Card.insertMany(cards); //Add cards to 'cards' Collection
+                console.log('Cards Info Added Succesfully');
 
-                        Card.insertMany(cards); //Add cards to 'cards' Collection
-                        console.log('Cards Info Added Succesfully');
+                if(fs.exists("cards")){
+                    await fs.remove("cards");
+                }
 
-                        return cards;
-                    })
-                    .then((cards) => {
-                        if(fs.exists("/cards")){
-                            this.deleteFolderRecursive("/cards");
-                        } else {
-                            fs.mkdirSync("/cards");
-                        }
+                await fs.mkdir("cards");
 
-                        const id = cards.map(card => {
-                            this.downloadImage("https://ygoprodeck.com/pics/" + card.id + ".jpg", 'cards/card_' + card.id + ".jpg");
-                        });
-                    })
+                const ImageRequests = 
+                cards.filter((card, i) => i < 100).map((card) => 
+                    this.downloadRequest("https://ygoprodeck.com/pics/" + card.id + ".jpg", 'cards/card_' + card.id + ".jpg"))
+
+                ImageRequests.reduce((promiseChain, currentPromise) => {
+                    return promiseChain.then(chainResults => 
+                        currentPromise.then(currentResult => 
+                            [ ...chainResults, currentResult ])
+                    )
+                }, Promise.resolve([])).then(arrayOfResults => {
+                    console.log(arrayOfResults);
+                })
+
+                //await Promise.all(ImageRequests)
+                //.then(() => console.log("Finish"))
+                //.catch((err) => console.log(err));
+
+                //console.log(ImageRequests);
+
             } catch (error) {
                 console.log(error);
             }
@@ -48,41 +57,30 @@ class populateDB {
         .catch((reason) => console.log(reason))
     }
 
-    downloadImage(url, image_path){
-        axios.get(url, {
+    async downloadRequest(url, image_path){
+
+        return axios.get(url, {
             responseType: 'arraybuffer',
             headers: {
                 'Content-Type': 'image/jpeg',
-              },
+            },
         })
-        .then(response => {
-            // response.data is an empty object
-
-            //response.data.pipe(fs.createWriteStream( image_path ))
-            fs.writeFile(image_path, response.data, (err) => {
-                console.log(err);
-            });
-            //writeFileSync(image_path, response.data);
-
-            return { 'status' : true, 'error' : '' };
+        .catch((err) => console.log("Request Error:", err))
+        .then((response) => {
+            console.log(url);
+            this.save(response, image_path)
         })
-        .catch(error => 
-            ( { 'status' : false, 'error' : 'Error: ' + error.message }));
+        .then(async () => await this.delay(5000))
+        .catch((err) => console.log("Save Error: ", err))
     }
 
-    deleteFolderRecursive(path) {
-        if (fs.existsSync(path)) {
-          fs.readdirSync(path).forEach(function(file, index){
-            var curPath = path + "/" + file;
-            if (fs.lstatSync(curPath).isDirectory()) { // recurse
-              deleteFolderRecursive(curPath);
-            } else { // delete file
-              fs.unlinkSync(curPath);
-            }
-          });
-          fs.rmdirSync(path);
-        }
-      };
+    save(response, image_path){
+        return fs.writeFileSync(image_path, response.data);
+    }
+
+    async delay(ms) {
+        return await new Promise(resolve => setTimeout((x) => resolve(x), ms));
+      }
 }
 
 export default populateDB;
